@@ -160,6 +160,9 @@ async function router() {
   $('#cart-page').hide();
   $('#state').hide();
 
+  // clean up rec slider resize listener on every route change
+  $(window).off('resize.rec');
+
   if (route.page === 'product') {
     await loadProduct(route.id);
   } else if (route.page === 'cart') {
@@ -242,11 +245,73 @@ async function loadProduct(id) {
           </button>
         </div>
       </div>
+      <div class="recommendations">
+        <h3 class="recommendations-title">You may also like</h3>
+        <div class="recommendations-grid" id="recommendations-grid">
+          <span class="rec-loading">Loading<span class="dots"></span></span>
+        </div>
+      </div>
     </div>
   `);
 
   initSlider('#grid .slider');
   $('#pagination').hide();
+
+  // fetch recommendations after page is rendered
+  try {
+    const recRes = await fetch(`https://dummyjson.com/products/category/${p.category}`);
+    const recData = await recRes.json();
+    const related = recData.products.filter(r => r.id !== p.id).slice(0, 4);
+
+    if (related.length === 0) {
+      $('#recommendations-grid').html('<span style="color:#999;font-size:13px;">No related products found.</span>');
+      return;
+    }
+
+    $('#recommendations-grid').html(`
+      <div class="rec-slider">
+        <button class="rec-btn rec-prev" aria-label="Previous">&#8249;</button>
+        <div class="rec-track-wrap">
+          <div class="rec-track">
+            ${renderCards(related)}
+          </div>
+        </div>
+        <button class="rec-btn rec-next" aria-label="Next">&#8250;</button>
+      </div>
+    `);
+
+    // rec slider logic
+    const $track    = $('.rec-track');
+    const $cards    = $('.rec-track .card');
+    const cardCount = $cards.length;
+    let recIndex    = 0;
+
+    function getCardWidth() {
+      const gap     = 16;
+      const visible = $(window).width() <= 480 ? 1 : 2;
+      return ($('.rec-track-wrap').width() - gap * (visible - 1)) / visible;
+    }
+
+    function recGoTo(index) {
+      const gap      = 16;
+      const visible  = $(window).width() <= 480 ? 1 : 2;
+      const cardW    = getCardWidth();
+      const maxIndex = Math.max(0, cardCount - visible);
+      recIndex = Math.min(Math.max(index, 0), maxIndex);
+      $track.css('transform', `translateX(-${recIndex * (cardW + gap)}px)`);
+      $('.rec-prev').prop('disabled', recIndex === 0);
+      $('.rec-next').prop('disabled', recIndex >= maxIndex);
+    }
+
+    $('.rec-prev').on('click', () => recGoTo(recIndex - 1));
+    $('.rec-next').on('click', () => recGoTo(recIndex + 1));
+    $(window).on('resize.rec', () => recGoTo(recIndex));
+
+    recGoTo(0);
+
+  } catch (e) {
+    $('#recommendations-grid').html('<span style="color:#999;font-size:13px;">Could not load recommendations.</span>');
+  }
 }
 
 // ── Cart ──────────────────────────────────────────────────────────────────────
@@ -275,7 +340,7 @@ const Cart = {
     return this.get().reduce((sum, item) => sum + item.quantity, 0);
   },
   updateBadge() {
-    $('.minicart-quantity').text(this.total() || '');
+    $('.minicart-quantity').text(this.total() || 0);
   }
 };
 
@@ -338,7 +403,7 @@ function renderCartPage() {
       </div>
       <div class="qty-controls">
         <div class="qty-row">
-          <button class="qty-btn decrease" data-id="${item.id}">-</button>
+          <button class="qty-btn decrease" data-id="${item.id}">−</button>
           <span class="qty-value">${item.quantity}</span>
           <button class="qty-btn increase" data-id="${item.id}">+</button>
         </div>

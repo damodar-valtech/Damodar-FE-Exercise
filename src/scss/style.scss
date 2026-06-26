@@ -53,8 +53,8 @@ header span#total-label {
   position: absolute;
   top: -6px;
   right: -8px;
-  background: #222;
-  color: #fff;
+  background: #fff;
+  color: #222;
   font-size: 11px;
   width: 18px;
   height: 18px;
@@ -81,11 +81,20 @@ header span#total-label {
   gap: 16px;
 }
 
+@media (min-width: 901px) and (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 320px));
+    justify-content: center;
+  }
+}
 
 @media (max-width: 900px) {
   .grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+}
 
 /* ── Card ───────────────────────────────────────────────────────────────────── */
 
@@ -227,7 +236,7 @@ header span#total-label {
 }
 
 /* Mobile: always-visible actions */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .card-actions {
     position: static;
     transform: none;
@@ -465,7 +474,87 @@ header span#total-label {
 
 .dot.active { background: #fff; }
 
-/* ── QuickView overlay ───────────────────────────────────────────────────────── */
+/* ── Recommendations ─────────────────────────────────────────────────────────── */
+
+.recommendations {
+  margin-top: 48px;
+  border-top: 1px solid #e8e8e8;
+  padding-top: 32px;
+}
+
+.recommendations-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.recommendations-grid {
+  position: relative;
+}
+
+.rec-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rec-track-wrap {
+  flex: 1;
+  overflow: hidden;
+}
+
+.rec-track {
+  display: flex;
+  gap: 16px;
+  transition: transform 0.3s ease;
+}
+
+/* desktop: all 4 visible, no clipping */
+@media (min-width: 901px) {
+  .rec-track-wrap { overflow: visible; }
+  .rec-track { transform: none !important; }
+  .rec-track .card { flex: 0 0 calc(25% - 12px); }
+}
+
+/* tablet: 2 visible */
+@media (max-width: 900px) {
+  .rec-track .card { flex: 0 0 calc(50% - 8px); }
+}
+
+/* mobile: 1 visible */
+@media (max-width: 480px) {
+  .rec-track .card { flex: 0 0 100%; }
+}
+
+.rec-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  color: #222;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .rec-btn { display: flex; }
+}
+
+.rec-btn:hover:not(:disabled) { background: #f5f5f5; }
+.rec-btn:disabled { opacity: 0.3; cursor: default; }
+
+.rec-loading {
+  font-size: 13px;
+  color: #999;
+}
 
 .qv-overlay {
   position: fixed;
