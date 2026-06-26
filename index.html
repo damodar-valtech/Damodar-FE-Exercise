@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products</title>
+    <link rel="stylesheet" href="dist/style.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Products</h1>
+        <span id="total-label"></span>
+        <!-- Cart icon wrapped in <a href="#/cart"> to trigger hash routing -->
+        <a href="#/cart" class="cart-icon" aria-label="View cart">
+            <img src="dist/cart.svg" alt="basket">
+            <span class="minicart-quantity">0</span>
+        </a>
+    </header>
+
+    <div class="container">
+        <div id="state" class="state">
+            <span class="state-text">
+                Loading products<span class="dots"></span>
+            </span>
+        </div>
+        <div id="grid" class="grid" style="display: none;"></div>
+        <div class="pagination" id="pagination" style="display: none;"></div>
+    </div>
+
+    <div id="cart-page" class="cart-page" style="display:none">
+        <a href="#/" class="back-link">← Continue Shopping</a>
+        <h2>Your Cart</h2>
+        <div id="cart-items"></div>
+        <div id="cart-empty" class="cart-empty" style="display:none">
+            Your cart is empty.
+        </div>
+        <div id="cart-summary" class="cart-summary"></div>
+    </div>
+
+    <!-- QuickView overlay -->
+    <div id="quickview-overlay" class="qv-overlay" style="display:none">
+        <div class="qv-modal">
+            <button class="qv-close" id="qv-close">✕</button>
+            <div id="qv-content" class="qv-content"></div>
+        </div>
+    </div>
+
+    <script src="dist/script.min.js"></script>
+
+</body>
+
+</html>
